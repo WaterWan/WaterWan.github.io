@@ -1,5 +1,7 @@
 import { createGazetteer, lookup, suggest, LEVEL_NAMES } from "./lookup.js";
-import { resolveHistory, KINGDOMS, SOURCES } from "../data/history.js";
+import { resolveHistory, SOURCES } from "../data/history.js";
+import { presentHistory } from "./presentation.js";
+import { createCoverage } from "./coverage.js";
 
 const form = document.querySelector("#search-form");
 const input = document.querySelector("#place-query");
@@ -97,52 +99,54 @@ function sourceLinks(sourceIds) {
   return row;
 }
 
+function entityList(entities) {
+  const compact = entities.every((entity) => !entity.note);
+  const list = node("ul", `entity-list${compact ? " is-compact" : ""}`);
+  list.setAttribute("aria-label", "涉及实体、类型与参考关系");
+  for (const entity of entities) {
+    const item = node("li", `entity-item ${entity.tone}`);
+    const title = node("div", "entity-title");
+    title.append(node("strong", "", entity.name), node("span", "entity-type", entity.typeLabel));
+    item.append(title, node("p", "entity-relation", entity.relationLabel));
+    if (entity.note) item.append(node("p", "entity-note", entity.note));
+    list.append(item);
+  }
+  return list;
+}
+
 function showPlace(place) {
   const record = resolveHistory(place, index);
-  const names = record.kingdoms.map((kingdom) => KINGDOMS[kingdom].name).join(" / ");
-  const statusNames = {
-    single: "地点线索 · 非全境判定",
-    regional: "省域参考 · 非全境判定",
-    mixed: "跨境地区 · 不能只选一国",
-    frontier: "边地或控制程度不一",
-    outside: "三国主要控制区之外",
-    uncertain: "已识别地区 · 归属暂不确定",
-  };
-  const evidenceNames = {
-    locality: "地方沿革 + 年代地图",
-    "city-core": "城市中心锚点",
-    province: "省域轮廓（粗粒度）",
-  };
-  const status = record.isFallback ? "上级参考 · 本地未单独核验" : statusNames[record.kind];
-  const heading = showResultShell(status, place.name);
+  const view = presentHistory(record);
+  const heading = showResultShell(view.status, place.name);
   results.append(node("p", "result-path", place.label));
   if (record.isFallback) results.append(node("p", "fallback-warning", record.fallbackNote));
-
-  let answer = names;
-  if (record.kind === "outside") answer = "三国主要控制区之外";
-  else if (record.kind === "uncertain") answer = "暂不作归属判断";
-  else if (record.kind === "frontier") answer = `${names} · 局部参考`;
-  else if (record.kind === "regional") answer = `${names} · 区域参考`;
-  else if (record.kind === "mixed") answer = `${names}，均有涉及`;
-  if (record.isFallback) answer = `背景：${answer}`;
+  if (record.nameNote) results.append(node("p", "name-warning", record.nameNote));
 
   const answerRow = node("div", "result-answer");
-  const stampClass = record.kingdoms.length === 1 ? record.kingdoms[0] : "is-multiple";
-  const stamp = node("span", `realm-stamp ${stampClass}`,
-    record.kingdoms.map((kingdom) => KINGDOMS[kingdom].short).join("·") || (record.kind === "outside" ? "外" : "待考"));
+  const stamp = node("span", `realm-stamp ${view.tone}${view.stamp.length > 1 ? " is-multiple" : ""}`, view.stamp);
   stamp.setAttribute("aria-hidden", "true");
   const copy = node("div", "answer-copy");
-  copy.append(node("h3", "answer-title", answer), node("p", "answer-summary", record.summary));
+  copy.append(node("h3", "answer-title", view.answer), node("p", "answer-summary", record.summary));
+  if (view.backgroundAnswer) {
+    copy.prepend(node("p", "background-answer", `下方只是上级背景：${view.backgroundAnswer}`));
+  }
   if (record.ancientName) {
     copy.append(node("p", "ancient-clue", `参考区域的古地名线索：${record.ancientName}`));
   }
   answerRow.append(stamp, copy);
   results.append(answerRow);
+  if (view.primary.length) results.append(entityList(view.primary));
+  if (view.contacts.length) {
+    const contacts = node("aside", "contact-context");
+    contacts.setAttribute("aria-label", "往来关系，不等于全境占领");
+    contacts.append(node("h3", "", "官署与往来，不等于全境占领"), entityList(view.contacts));
+    results.append(contacts);
+  }
 
   const evidence = node("dl", "evidence-grid");
   for (const [label, value] of [
-    ["参考年份", "公元 262 年"],
-    ["实际证据层级", evidenceNames[record.evidence]],
+    ["判断依据", view.methodLabel],
+    ["参考尺度", view.evidenceLabel],
     ["参考范围，不是今日全境", record.scope],
   ]) {
     const item = node("div");
@@ -151,8 +155,10 @@ function showPlace(place) {
   }
   const caveat = node("p", "boundary-note");
   caveat.append(node("strong", "", "需留意："), document.createTextNode(record.caveat));
-  results.append(evidence, caveat, sourceLinks(record.sources));
-  announce(`${place.label}。${status}。${answer}。参考范围：${record.scope}。${record.fallbackNote || record.caveat}`);
+  results.append(evidence);
+  if (record.dateNote) results.append(node("p", "chronology-note", `年代依据：${record.dateNote}`));
+  results.append(caveat, sourceLinks(record.sources));
+  announce(`${place.label}。${view.status}。${view.answer}。${view.entityAnnouncement}。${record.nameNote || ""}参考范围：${record.scope}。${record.fallbackNote || record.caveat}`);
   focusResult(heading);
 }
 
@@ -209,7 +215,7 @@ function search() {
     focusResult(heading);
     return;
   }
-  const heading = showResultShell("名称未匹配 · 不代表古代在三国之外", "还没找到这个现代地名");
+  const heading = showResultShell("名称未匹配 · 不代表没有历史记录", "还没找到这个现代地名");
   results.append(node("p", "state-description", `名称库中未找到“${input.value.trim()}”的完整匹配。`));
   results.append(node("p", "state-hint", "请检查拼写，或补上省、市名称。暂不支持乡镇、古地名、拼音与繁简自动转换；2023 年中之后的新名称也可能未收录。港澳台目前只收录省级名称。"));
   const possible = suggest(index, input.value);
@@ -300,6 +306,12 @@ async function loadData() {
     const response = await fetch(new URL("../data/places.json", import.meta.url), { signal: AbortSignal.timeout(12000) });
     if (!response.ok) throw new Error(`名称文件返回 HTTP ${response.status}`);
     index = createGazetteer(await response.json());
+    const audit = createCoverage(index);
+    const prefectures = audit.summary.auditedPrefectures;
+    document.querySelector("#audit-counts").textContent =
+      `全国 ${audit.summary.totalAudited} 条省级／地级审计：地级有 ${prefectures["local-evidence"]} 条直接地点资料、${prefectures["atlas-region"]} 条图域参照、${prefectures["regional-overview"]} 条区域综述、${prefectures["parent-fallback"]} 条上级回退、${prefectures["reviewed-gap"]} 条已检查但仍待核。`;
+    document.querySelector("#history-counts").textContent =
+      `共 ${audit.summary.explicitPlaceRules} 条明确的地点／区域规则，包含 ${audit.summary.curatedLocalEntries} 条特别地点与待核说明、${audit.summary.countyAnchors} 个独立县级地点条目。不同证据类型分开计数，不把名称库大小当作核验数量。`;
     loadStatus.className = "is-ready";
     loadStatusText.textContent = `${index.counts.province} 个省级名称 · ${index.counts.prefecture} 个大陆地级条目 · 名称快照 2023.06`;
     input.disabled = false;

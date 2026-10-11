@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f1e7">
-  <meta name="description" content="输入今天的省、市或区县，查阅公元 262 年魏、蜀、吴的粗略区域归属。注明史料、实际参考层级与边界不确定性。">
+  <meta name="description" content="输入今天的省、市或区县，查阅公元 262 年的魏蜀吴、同时代诸国与诸部。区分政权、族群、官署往来与实际控制，注明史料和参考层级。">
   <meta name="color-scheme" content="light">
-  <title>三国地名笺｜你的家乡，在魏蜀吴的哪一边？</title>
+  <title>三国地名笺｜看见魏蜀吴，也看见同时代的世界</title>
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="stylesheet" href="./styles.css">
   <script type="module" src="./js/app.js"></script>
@@ -29,8 +29,8 @@
     <section class="hero" aria-labelledby="page-title">
       <div class="hero-copy">
         <p class="eyebrow"><span class="fine-line" aria-hidden="true"></span> 以今日地名，翻一页三国</p>
-        <h1 id="page-title">你的家乡，<br>在<em>魏蜀吴</em>的哪一边？</h1>
-        <p class="hero-description">写下一个熟悉的地名，回望三国并立的那一年。<br class="desktop-break">不求画出每一道疆界，只给有分寸的历史参考。</p>
+        <h1 id="page-title">你的家乡，<br>在<em>三国时代</em>的何处？</h1>
+        <p class="hero-description">从魏蜀吴，到同一时代的诸国与诸部。<br class="desktop-break">写下一个熟悉的地名，读它的历史，也看见答案的边界。</p>
       </div>
       <aside class="year-plate" aria-label="固定历史截面：公元262年">
         <span class="plate-top">定格于 · 公元</span>
@@ -47,7 +47,7 @@
     <section id="query" class="search-section" aria-labelledby="search-label">
       <div class="search-topline">
         <label id="search-label" for="place-query">此刻，你想查哪里？</label>
-        <span>今地名 <span class="quiet-arrow" aria-hidden="true">→</span> 古时归属</span>
+        <span>今地名 <span class="quiet-arrow" aria-hidden="true">→</span> 当时格局</span>
       </div>
       <form id="search-form" novalidate>
         <div class="search-row">
@@ -69,7 +69,7 @@
         </div>
         <p id="input-error" class="input-error" role="alert" hidden></p>
         <div class="search-help-row">
-          <p id="search-help">输入省、市或区县；同名地区会请你选择。</p>
+          <p id="search-help">城市看所在地；省、州、地区、盟按整个区域分区说明。同名会请你选择。</p>
           <span class="key-help" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> 选择　<kbd>Enter</kbd> 查询</span>
         </div>
       </form>
@@ -81,6 +81,10 @@
         <button type="button" data-query="成都" disabled>成都 <span aria-hidden="true">↗</span></button>
         <button type="button" data-query="西安市" disabled aria-label="查询陕西省西安市">西安 <span aria-hidden="true">↗</span></button>
         <button type="button" data-query="江苏" disabled>江苏全省 <span aria-hidden="true">↗</span></button>
+        <button type="button" data-query="新疆" disabled>新疆诸国 <span aria-hidden="true">↗</span></button>
+        <button type="button" data-query="库车市" disabled>库车 <span aria-hidden="true">↗</span></button>
+        <button type="button" data-query="集安市" disabled>集安 <span aria-hidden="true">↗</span></button>
+        <button type="button" data-query="贵阳市" disabled>贵阳 <span aria-hidden="true">↗</span></button>
       </div>
       <div class="data-status-row">
         <p id="load-status" role="status"><span class="status-dot" aria-hidden="true"></span><span id="load-status-text">正在载入本地名称库…</span></p>
@@ -100,12 +104,14 @@
       <span class="note-mark" aria-hidden="true">笺</span>
       <div>
         <h2>地名是线索，不是疆界。</h2>
-        <p>今天的扬州，不等于古代的扬州。一个省，也可能横跨两个国家。<br class="desktop-break">查到的每条结果，都会说明：判断到了哪一级，还有哪里不能确定。</p>
+        <p>一个今地，可能涉及多个政权或诸部。族群活动，也不等于国家疆域。<br class="desktop-break">查到的每条结果，都会说明：涉及谁、依据到哪一级、还有哪里不能确定。</p>
       </div>
-      <div class="kingdom-key" aria-label="三国图例">
+      <div class="history-key" aria-label="历史实体图例，颜色仅区分类型，不代表疆界">
         <span><i class="wei-dot" aria-hidden="true"></i>曹魏</span>
         <span><i class="shu-dot" aria-hidden="true"></i>蜀汉</span>
         <span><i class="wu-dot" aria-hidden="true"></i>孙吴</span>
+        <span><i class="polity-dot" aria-hidden="true"></i>其他政权</span>
+        <span><i class="peoples-dot" aria-hidden="true"></i>族群 / 诸部</span>
       </div>
     </section>
 
@@ -117,18 +123,18 @@
       <div class="principles">
         <article>
           <span class="principle-number">01<span> / 时间</span></span>
-          <h3>只看公元 262 年</h3>
-          <p>选在魏、蜀、吴仍并立的一年。不是整个三国时期的合集，也不会把蜀汉在 263 年灭亡后的归属，放到这一页里。</p>
+          <h3>同一年代，不止三国</h3>
+          <p>仍以公元 262 年为参照，同时看魏蜀吴之外的政权与诸部。材料若只能支持三世纪背景，会说明年代范围，不挪用后起政权。</p>
         </article>
         <article>
           <span class="principle-number">02<span> / 尺度</span></span>
-          <h3>认得名字，不等于考证过全境</h3>
-          <p>江苏、安徽、湖北等省会涉及多国。区县缺少单独资料时，只展示明确标注的上级背景；城市中心的史料也不能代表全市。</p>
+          <h3>地点、区域、缺口分别说明</h3>
+          <p>可判断的城市尽量给出明确答案；省、州、地区、盟不拿首府替代全域。直接资料、图域参照和上级粗推分开标注，不把资料未补说成历史本来模糊。</p>
         </article>
         <article>
           <span class="principle-number">03<span> / 留白</span></span>
-          <h3>不确定，就留在纸上</h3>
-          <p>边地、外部政权、间接联系与实际统治分开说明。不把所有地方都塞进魏蜀吴，也不把古代的州界误当成国家边界。</p>
+          <h3>往来、活动，不等于占领</h3>
+          <p>政权、多个并存国家、族群诸部分开标明。官署、往来关系单列，不能当成全境直接统治；仍无充分证据的地方，继续保留不确定。</p>
         </article>
       </div>
       <details class="coverage-details">
@@ -136,7 +142,13 @@
         <div class="details-body">
           <p id="coverage-summary"><strong>34 个省级名称、333 个大陆地级条目、2,850 个县级名称条目。</strong>包含直辖市区县和省直辖县级地区；港澳台暂仅支持省级名称。不收录乡镇、街道，也不把开发区等统计分组当作普通县区。</p>
           <p>大陆名称来自 <strong>2023 年 6 月 30 日</strong>快照，并非实时行政区划。后来新设、更名或调整的地区可能未收录；目前以简体中文全称或常见去后缀名称查询，不支持拼音、繁简自动转换或古地名反查。</p>
-          <p>历史层面有 <strong>34 条省域背景与 10 条地点线索</strong>。高邮使用地方沿革与 262 年地图交叉参考；其余重点条目以城市中心为锚点。没有逐一核验全国县区，名称覆盖数量不是独立考证数量。</p>
+          <p id="history-counts">历史规则区分直接地方线索、明确列出的年代图域城市清单与整区域综述；没有逐一核验全国县区。名称覆盖数量不是独立考证数量。</p>
+          <div class="audit-note">
+            <p id="audit-counts">全国覆盖审计逐条列出 34 个省级、333 个地级名称的依据类别、对应范围、来源和仍待补充的地方。</p>
+            <p><a href="./data/coverage.json">查看全部 367 条覆盖审计与来源</a>。有图域参照不等于独立地方文献核验；有区域综述也不等于全境逐点核实。</p>
+          </div>
+          <p>新疆展示龟兹、于阗、疏勒、鄯善、车师、乌孙等<strong>代表性诸国</strong>，不把它们合成一个国家；车师合称标为“多个政权”，车师前部另作单个政权。鲜卑、匈奴等部众标为“族群 / 诸部”。官署、朝贡、往来单列，不参与主归属标题。</p>
+          <p>古今地望材料的时间精度不一。考古资料若跨越汉晋或汉唐，只用来辅助找地点；结合时代文献与 262 年地图作粗略参照，不冒称遗址在 262 年的国界已被精确确证。未有可靠细分依据的地方仍保留留白。</p>
           <p>优先识别完整名称与行政路径；同名时列出选项。例如“西安”也会命中其他城市的西安区，可输入“陕西西安”或“西安市”。前缀只用于提示，不会自动当作答案。</p>
         </div>
       </details>
@@ -154,6 +166,21 @@
           <p>作为粗略空间与年代参考。未复制地图图像，也没有使用或宣称拥有精确的历史疆界矢量数据。</p>
           <a class="source-link" href="https://gaoyou.yangzhou.gov.cn/mlgy/gygk/art/2023/art_0e6f92a8aabf4866a7f571c3911d8552.html" target="_blank" rel="noopener noreferrer">高邮市人民政府 · 历史沿革 <span aria-hidden="true">↗</span></a>
           <p>用于高邮一带的魏地线索与县建制说明：约 224 年前后县废，不虚构 262 年仍有同名县。</p>
+          <a class="source-link" href="./data/coverage.json">全国城市资料与分图阅读索引 <span aria-hidden="true">↗</span></a>
+          <p>新增政府沿革、地方志及研究机构资料，优先修正混合省份中的明确城市。全部分图均只作阅读链接，本站不复制扫描图或发布来源不明的历史边界数据。</p>
+          <details class="additional-sources">
+            <summary>同时代政权与地望资料（7 项）</summary>
+            <ul>
+              <li><a href="https://zh.wikisource.org/wiki/三國志/卷30" target="_blank" rel="noopener noreferrer">《三国志》卷三十：西域诸国、鲜卑与东夷记载</a></li>
+              <li><a href="https://www.cssn.cn/lsx/lsx_kgx/202212/t20221227_5574454.shtml" target="_blank" rel="noopener noreferrer">中国社会科学网：龟兹故城与库车地望</a></li>
+              <li><a href="https://www.cssn.cn/lsx/slcz/202511/t20251121_5950773.shtml" target="_blank" rel="noopener noreferrer">中国社会科学网：约特干与古于阗都城研究</a></li>
+              <li><a href="http://www.ncha.gov.cn/art/2024/3/25/art_2760_187828.html" target="_blank" rel="noopener noreferrer">国家文物局：喀什莫尔寺与古疏勒线索</a></li>
+              <li><a href="https://www.xjrq.gov.cn/rqxrmzf/c108794/201709/01eca25655974153a56dedcb0c9c4523.shtml" target="_blank" rel="noopener noreferrer">若羌县人民政府：若羌、楼兰与鄯善</a></li>
+              <li><a href="http://www.ncha.gov.cn/art/2024/8/8/art_2791_190646.html" target="_blank" rel="noopener noreferrer">国家文物局：高句丽王城与集安地望</a></li>
+              <li><a href="http://hrczh.cass.cn/sxqy/kgx/202502/t20250228_5853227.shtml" target="_blank" rel="noopener noreferrer">中国历史研究院：东团山—南城子与扶余早期王城</a></li>
+            </ul>
+            <p>时代文献说明当时有哪些政权与部众；地望和考古研究辅助联系今地，不一律当作精确到 262 年的实控疆界证据。出处和适用范围也随具体结果列出。</p>
+          </details>
         </div>
         <div>
           <h3>现代名称来源</h3>
