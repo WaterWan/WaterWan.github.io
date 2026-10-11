@@ -1,0 +1,20 @@
+{
+  "name": "modood/Administrative-divisions-of-China",
+  "repository": "https://github.com/modood/Administrative-divisions-of-China",
+  "commit": "c49d495b40ac73eb1a66f6eeae5f8fd10696f035",
+  "path": "dist/pca-code.json",
+  "url": "https://raw.githubusercontent.com/modood/Administrative-divisions-of-China/c49d495b40ac73eb1a66f6eeae5f8fd10696f035/dist/pca-code.json",
+  "sha256": "83b7536f853ad16beb4d37b92890a3fd7bb9d33d4f37e7c8885fb948749a9bc4",
+  "snapshotDate": "2023-06-30",
+  "upstreamPublicationDate": "2023-09-11",
+  "retrievedDate": "2026-10-11",
+  "license": "WTFPL-2.0",
+  "upstreamSource": "国家统计局 2023 年统计用区划代码和城乡划分代码",
+  "notes": [
+    "places.json 保留上游原始字节；名称快照并非提交日期，也不是实时区划。",
+    "检索时跳过 9 个中间分组、县级末两位 71—80 的统计管理单元、非 6 位的乡级节点。",
+    "保留 31 个大陆省级、333 个地级、2850 个县级名称条目；统计名称不等同于民政正式建制名录。",
+    "台湾省、香港特别行政区、澳门特别行政区三个省级名称在代码中补充，不虚构下级覆盖。",
+    "省级及县级名称识别覆盖，不代表这些地方的历史归属均已单独核验。"
+  ]
+}
