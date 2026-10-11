@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "以现代地名查询公元 262 年的三国区域参考",
+  "description": "以现代地名查询公元 262 年的政权、诸国与诸部背景",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "dev": "node scripts/serve.mjs",
-    "test": "node --test"
+    "test": "node --test",
+    "audit": "node scripts/audit.mjs",
+    "audit:update": "node scripts/audit.mjs --write"
   },
   "license": "MIT"
 }
