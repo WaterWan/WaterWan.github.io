@@ -24,7 +24,7 @@
     },
     "totalAudited": 367,
     "needingMoreEvidence": {
-      "province": 1,
+      "province": 2,
       "prefecture": 89
     },
     "explicitPlaceRules": 298,
@@ -118,6 +118,11 @@
       "title": "中国三国时期历史地图 · 公元 262 年",
       "url": "https://osgeo.cn/map/m0346/",
       "note": "阅读参考：魏景元三年、蜀汉景耀五年、吴永安五年。未复制地图图片，也未取得或使用精确疆界矢量数据。"
+    },
+    "chongqingJiangzhou": {
+      "title": "重庆市渝中区人民政府 · 历史沿革",
+      "url": "https://www.cqyz.gov.cn/zjyz/yzgk/lsyg/202302/t20230223_11646245.html",
+      "note": "说明渝中为重庆母城，提供巴郡、江州县及治所的地望。这里只用作主城区所在地线索，262 年政权归属结合益州北部分图，不外推整个直辖市。"
     },
     "cityAnkang": {
       "title": "安康市人民政府 · 历史沿革",
@@ -318,6 +323,11 @@
       "title": "中国历史研究院 · 皖城与三国军事地理研究",
       "url": "http://hrczh.cass.cn/sxqy/zgs/202502/t20250228_5854005.shtml",
       "note": "讨论魏合肥新城、六安与寿春，吴皖口（今安庆山口镇）及长期对峙。不以一次进攻等同于长期占领，也不按长江机械划界。"
+    },
+    "wushanJianping": {
+      "title": "重庆市地方志办公室 · 寻根“巫山”之名",
+      "url": "https://dfz.cq.gov.cn/zqlswh/rwby_417819/202602/t20260209_15397922.html",
+      "note": "沿革说明 222 年后巫县地域属吴，260 年吴置建平郡、治巫城。与 262 年分图合用，不把古代巫县、建平郡的边界直接等同于现代巫山县。"
     },
     "yutianSite": {
       "title": "中国社会科学网 · 约特干古于阗都城研究报道",
@@ -6863,18 +6873,22 @@
       "evidencePlaceCode": "50",
       "evidencePlaceName": "重庆市",
       "evidenceLevel": "province",
-      "scope": "重庆市的省级区域轮廓",
-      "resultKind": "frontier",
+      "scope": "重庆市现代直辖市整域的分区说明，不以主城区替代全域",
+      "resultKind": "mixed",
       "entities": [
-        "shu"
+        "shu",
+        "wu"
       ],
       "contacts": [],
       "sources": [
-        "atlas262"
+        "chongqingJiangzhou",
+        "wushanJianping",
+        "atlas11",
+        "atlas14"
       ],
       "mapGroup": null,
-      "needsMoreEvidence": false,
-      "limitation": "现代重庆范围很大，接近蜀吴交界的地区不能由城市中心外推。这里保留边界不确定性。"
+      "needsMoreEvidence": true,
+      "limitation": "两方并列表示现代直辖市覆盖不同的古代地域，不是同一处由两国共同统治。其余辖区仍需进一步细分，也不声称现代巫山县的全部边界已被复原。"
     },
     {
       "code": "51",

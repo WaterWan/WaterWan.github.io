@@ -134,6 +134,37 @@ test("province distribution, place priority and county fallback are kept separat
   }
 });
 
+test("Chongqing whole-region overview preserves the known Shu and Wu distribution", () => {
+  for (const query of ["重庆", "重庆市"]) {
+    const record = history(query);
+    const view = presentHistory(record);
+    assert.equal(record.place.code, "50");
+    assert.equal(record.isFallback, false);
+    assert.equal(record.kind, "mixed");
+    assert.equal(evidenceCategory(record), "regional-overview");
+    assert.deepEqual(view.primary.map(({ id }) => id), ["shu", "wu"]);
+    assert.match(view.answer, /主城区.*蜀汉.*巫山.*孙吴/);
+    assert.match(record.summary, /江州.*巴郡.*蜀汉.*巫山.*孙吴建平郡/);
+    assert.match(record.scope, /整域.*不以主城区替代全域/);
+    assert.match(record.caveat, /不声称现代巫山县的全部边界已被复原/);
+    assert.equal(record.coverageGap, true);
+    for (const source of ["chongqingJiangzhou", "wushanJianping", "atlas11", "atlas14"]) {
+      assert.ok(record.sources.includes(source));
+    }
+  }
+  const entry = report.entries.find(({ code }) => code === "50");
+  assert.equal(entry.queryScopeType, "whole-region");
+  assert.equal(entry.resultKind, "mixed");
+  assert.deepEqual(entry.entities, ["shu", "wu"]);
+  assert.equal(entry.needsMoreEvidence, true);
+  assert.equal(report.summary.needingMoreEvidence.province, 2);
+
+  const county = history("重庆市巫山县");
+  assert.equal(county.isFallback, true);
+  assert.match(county.fallbackNote, /尚未单独核验巫山县/);
+  assert.equal(county.evidencePlace.code, "50");
+});
+
 test("physical frontiers and missing source work are not disguised as precise national assignment", () => {
   for (const query of ["南通市", "滁州市"]) {
     const result = history(query);
