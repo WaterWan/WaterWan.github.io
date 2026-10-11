@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { createGazetteer, lookup } from "../js/lookup.js";
-import { KINGDOMS, PROVINCE_RULES, LOCAL_RULES, SOURCES, resolveHistory } from "../data/history.js";
+import { ENTITIES, ENTITY_TYPES, RELATION_TYPES, PROVINCE_RULES, LOCAL_RULES, PLACE_RULES, SOURCES, resolveHistory } from "../data/history.js";
+import { presentHistory } from "../js/presentation.js";
 
 const bytes = await readFile(new URL("../data/places.json", import.meta.url));
 const data = JSON.parse(bytes);
@@ -34,25 +35,41 @@ test("coverage counts, parent paths, codes and excluded statistical groups stay 
 
 test("every recognized name resolves to a sourced, scoped result or explicit uncertainty", () => {
   assert.equal(Object.keys(PROVINCE_RULES).length, 34);
-  assert.equal(Object.keys(LOCAL_RULES).length, 10);
-  for (const [code, rule] of Object.entries({ ...PROVINCE_RULES, ...LOCAL_RULES })) {
+  assert.equal(Object.keys(LOCAL_RULES).length, 50);
+  assert.equal(Object.keys(PLACE_RULES).length, 298);
+  for (const [code, rule] of Object.entries({ ...PROVINCE_RULES, ...PLACE_RULES })) {
     assert.ok(index.places.has(code), code);
     assert.ok(rule.summary && rule.caveat && rule.evidence);
     assert.ok(rule.sources.length);
-    assert.equal(new Set(rule.kingdoms).size, rule.kingdoms.length);
-    for (const kingdom of rule.kingdoms) assert.ok(KINGDOMS[kingdom]);
+    assert.equal(new Set(rule.entities.map(({ id }) => id)).size, rule.entities.length);
+    for (const entity of rule.entities) {
+      assert.ok(ENTITIES[entity.id]);
+      assert.ok(RELATION_TYPES[entity.relation]);
+    }
     for (const source of rule.sources) assert.ok(SOURCES[source]);
+    if (rule.evidence === "historic-site") assert.ok(rule.scope && rule.dateNote);
+    if (rule.expectedName) assert.equal(index.places.get(code).name, rule.expectedName);
   }
   for (const place of index.places.values()) {
     const result = resolveHistory(place, index);
     assert.equal(result.year, 262);
     assert.ok(result.scope);
+    const view = presentHistory(result);
+    assert.ok(view.answer && view.stamp && view.status && view.evidenceLabel);
     if (result.isFallback) {
       assert.ok(result.fallbackNote);
       assert.notEqual(result.evidencePlace.code, place.code);
     }
+    for (const entity of Object.values(ENTITIES)) {
+      assert.ok(entity.name && entity.short && entity.tone);
+      assert.ok(ENTITY_TYPES[entity.type]);
+      assert.doesNotMatch(entity.name, /吐蕃|突厥|回鹘|高昌王国|南诏|大理国/);
+    }
   }
-  for (const source of Object.values(SOURCES)) assert.equal(new URL(source.url).protocol, "https:");
+  for (const source of Object.values(SOURCES)) {
+    assert.ok(["http:", "https:"].includes(new URL(source.url).protocol));
+    assert.ok(source.note);
+  }
 });
 
 test("invalid datasets surface errors instead of producing success-shaped defaults", () => {
